@@ -19,5 +19,9 @@ if ! [ -f "$HOME/.ssh/id_rsa" ]; then
   ssh-keygen -t rsa -b 4096 -f $HOME/.ssh/id_rsa -P ""
 fi
 
+# vim keybindings
+set -o vi
+
+# ssh agent
 eval $(ssh-agent -s)
 ssh-add $HOME/.ssh/id_rsa

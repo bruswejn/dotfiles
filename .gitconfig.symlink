@@ -1,6 +1,6 @@
 [user]
-	name = Linus Kendall
-	email = git@linuskendall.com
+	name = Mateusz Mróz
+	email = mateuszmroz1986@gmail.com
 
 [alias]
         unpushed = log --branches --not --remotes=origin --no-walk --decorate --oneline

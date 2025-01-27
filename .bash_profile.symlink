@@ -25,3 +25,48 @@ set -o vi
 # ssh agent
 eval $(ssh-agent -s)
 ssh-add $HOME/.ssh/id_rsa
+
+__bash_prompt
+export PROMPT_DIRTRIM=4
+
+# Check if the terminal is xterm
+if [[ "$TERM" == "xterm" ]]; then
+    # Function to set the terminal title to the current command
+    preexec() {
+        local cmd="${BASH_COMMAND}"
+        echo -ne "\033]0;${USER}@${HOSTNAME}: ${cmd}\007"
+    }
+
+    # Function to reset the terminal title to the shell type after the command is executed
+    precmd() {
+        echo -ne "\033]0;${USER}@${HOSTNAME}: ${SHELL}\007"
+    }
+
+    # Trap DEBUG signal to call preexec before each command
+    trap 'preexec' DEBUG
+
+    # Append to PROMPT_COMMAND to call precmd before displaying the prompt
+    PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND; }precmd"
+fi
+##--vault
+# activate vault env by default in bash
+source /workspaces/rpcpool/vault-env.sh
+##--nomad
+# activate nomad env by default in bash
+source /workspaces/rpcpool/nomad-env.sh
+##--tailscale-check
+# Check if Tailscale is connected
+if ! tailscale status > /dev/null 2>&1; then
+  echo "Warning: Tailscale is not connected. You may need to run tailscale login / tailscale up manually:  tailscale up --accept-routes --ssh . Check if TAILSCALE_KEY is set correctly."
+fi
+##--ssh-agent-rc
+export SSH_AUTH_SOCK=""
+eval `ssh-agent -s`
+ssh-add ~/.ssh/id_ed25519_mt
+ssh-add -K
+
+ss() {
+ local host=$1
+ echo -ne "\033]0;Default Title\007"
+ ./vault-ssh.sh "$@".rpcpool.wg
+}
